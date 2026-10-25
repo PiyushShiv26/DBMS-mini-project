@@ -1,0 +1,38 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.venv/
+venv/
+env/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# IDE and operating system
+.DS_Store
+.idea/
+.vscode/
+.zed/
+
+# Test and coverage output
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs
+*.log
+
+# Local databases and generated data
+*.sqlite
+*.sqlite3
+
+# Temporary files
+*.tmp
+*.swp
