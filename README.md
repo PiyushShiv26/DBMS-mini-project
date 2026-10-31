@@ -74,7 +74,12 @@ Contains five tables:
 This database supplies sample relational data for workload discovery, execution-plan inspection, and analytical reporting.
 
 ### ER diagrams
+### Platform Metadata ER Diagram
+![Platform ERD](docs/platform_erd.png)
 
+### E-Commerce Demo ER Diagram
+![Demo ERD](docs/demo_erd.png)
+	
 The database diagrams and their editable Mermaid sources are available in `docs/`:
 
 - `platform_erd.png` — platform metadata schema.
@@ -139,11 +144,10 @@ DBMS-mini-project/
 ### 1. Clone and enter the repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/PiyushShiv26/DBMS-mini-project
 cd DBMS-mini-project
 ```
 
-Replace `<repository-url>` with the actual repository URL after the project is published.
 
 ### 2. Create a Python environment
 
