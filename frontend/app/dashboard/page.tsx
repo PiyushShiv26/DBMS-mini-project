@@ -20,6 +20,8 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("idop_role");
+    localStorage.removeItem("idop_token");
+    localStorage.removeItem("idop_token");
     router.push("/");
   };
 

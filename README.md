@@ -2,7 +2,7 @@
 
 A database management platform that combines relational metadata storage, vector-based SQL workload discovery, and deterministic, explainable query optimization recommendations.
 
-**Project status:** Working prototype — under development.
+**Project status:** Presentation-ready development freeze.
 
 ## Overview
 
@@ -42,7 +42,8 @@ Ranked workloads               |
 - **FastEmbed:** Generates text embeddings for semantic search.
 - **Python:** Workload analysis, database access, semantic search, and CLI integration.
 - **Docker:** Runs the Qdrant service.
-- **Mermaid:** Source format for database ER diagrams.
+- **Mermaid:** Source format for relational/crow's-foot ER diagrams.
+- **Graphviz DOT:** Editable Chen-notation ER source.
 
 ## Database Design
 
@@ -79,6 +80,11 @@ This database supplies sample relational data for workload discovery, execution-
 
 ### E-Commerce Demo ER Diagram
 ![Demo ERD](docs/demo_erd.png)
+
+The editable Chen-notation source is [docs/demo_chen_erd.dot](docs/demo_chen_erd.dot).
+Rectangles represent entities, diamonds represent relationships, ellipses
+represent attributes, and edge labels show cardinalities. Render it with
+`dot -Tpng docs/demo_chen_erd.dot -o docs/demo_chen_erd.png`.
 	
 The database diagrams and their editable Mermaid sources are available in `docs/`:
 
@@ -86,6 +92,7 @@ The database diagrams and their editable Mermaid sources are available in `docs/
 - `platform_erd.md` — editable platform ER diagram source.
 - `demo_erd.png` — e-commerce demo schema.
 - `demo_erd.md` — editable demo ER diagram source.
+- `demo_chen_erd.dot` — editable Chen-notation demo ER diagram source.
 
 ## Implemented Features
 
@@ -97,6 +104,7 @@ The database diagrams and their editable Mermaid sources are available in `docs/
 - MySQL `EXPLAIN` integration in the CLI workflow.
 - Analytical SQL reports using joins, aggregation, grouping, and subqueries.
 - Relational constraints and indexes in the demo schema.
+- Views, triggers, stored procedures, stored functions, transactions, and MySQL FULLTEXT search; see [docs/advanced_sql_features.md](docs/advanced_sql_features.md).
 
 ## Optimization Approach
 
@@ -157,7 +165,13 @@ source .venv/bin/activate
 python -m pip install --upgrade pip
 ```
 
-Install the project's Python dependencies using its dependency file once prepared.
+Install the project's Python dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+The web backend is exposed by `backend.main:app` and is designed for the Next.js frontend.
 
 ### 3. Configure MySQL
 
@@ -172,13 +186,11 @@ The SQL files expect the databases `idop_demo_db` and `idop_platform_db` to exis
 
 ### 4. Configure database credentials
 
-Set connection settings through environment variables in your terminal. Do not hard-code credentials into source files or commit them to Git.
+Copy `.env.example` to `.env` and fill in the local values. The backend loads `.env` automatically with `python-dotenv`; do not commit the real secret file.
 
 ```bash
-export DB_HOST=localhost
-export DB_PORT=3306
-export DB_USER=root
-export DB_PASSWORD='your-local-password'
+cp .env.example .env
+# Edit .env and set DB_PASSWORD, API_TOKEN_SECRET, and ADMIN_PROVISIONING_KEY.
 ```
 
 Use an appropriately privileged database account for your environment.
@@ -207,6 +219,37 @@ curl http://localhost:6333/collections
 ```
 
 ### 6. Run the prototype
+
+Start the REST backend:
+
+```bash
+uvicorn backend.main:app --reload --port 8000
+```
+
+It provides `GET /api/health`, authentication at `/api/auth/register` and
+`/api/auth/login`, workload/recommendation endpoints, semantic `/api/search`,
+and workload EXPLAIN endpoints. Send the returned token as
+`Authorization: Bearer <token>`. Set `CORS_ORIGINS` to the frontend origin if
+it is not `http://localhost:3000`.
+
+For local development, also set a stable token secret:
+
+```bash
+# These values are loaded automatically from .env.
+```
+
+Start the Next.js frontend in a second terminal:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+The advanced SQL definitions and demonstration commands are documented in
+[docs/advanced_sql_features.md](docs/advanced_sql_features.md).
+
+Then run the existing CLI tools as needed:
 
 Index and search the SQL workloads:
 

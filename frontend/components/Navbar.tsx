@@ -13,10 +13,16 @@ export default function Navbar({ role, onLogout }: { role: string; onLogout: () 
     { name: "Schemas", href: "/schemas", icon: Database },
     { name: "Workloads", href: "/workloads", icon: Terminal },
     { name: "Semantic Search", href: "/search", icon: Search },
-  ];
+    { name: "User Management", href: "/admin/users", icon: Shield },
+  ].filter((item) => {
+    const normalizedRole = role.toLowerCase();
+    if (item.name === "Semantic Search") return normalizedRole === "admin" || normalizedRole === "analyst";
+    if (item.name === "User Management") return normalizedRole === "admin";
+    return true;
+  });
 
   return (
-    <aside className="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+    <aside className="w-64 h-screen sticky top-0 shrink-0 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
       <div>
         <div className="p-6 border-b border-slate-800 flex items-center space-x-3">
           <div className="bg-indigo-600 p-2 rounded-lg text-white font-bold">IDOP</div>
@@ -56,11 +62,14 @@ export default function Navbar({ role, onLogout }: { role: string; onLogout: () 
           </div>
         </div>
         <button
-          onClick={onLogout}
+          onClick={() => {
+            onLogout();
+            window.location.replace("/");
+          }}
           className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-slate-800 hover:bg-red-600/20 hover:text-red-400 text-slate-400 rounded-lg text-sm transition-colors"
         >
           <LogOut className="w-4 h-4" />
-          <span>Switch Role / Logout</span>
+          <span>Logout</span>
         </button>
       </div>
     </aside>

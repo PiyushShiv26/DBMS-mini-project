@@ -93,20 +93,11 @@ CREATE TABLE IF NOT EXISTS payments (
 );
 
 -- Indexes for common lookup and join patterns.
-CREATE INDEX idx_customers_city
-    ON customers(city);
-
-CREATE INDEX idx_products_category
-    ON products(category);
-
-CREATE INDEX idx_orders_customer_date
-    ON orders(customer_id, order_date);
-
-CREATE INDEX idx_orders_status_date
-    ON orders(status, order_date);
-
-CREATE INDEX idx_order_items_product
-    ON order_items(product_id);
-
-CREATE INDEX idx_payments_order_status
-    ON payments(order_id, status);
+-- MySQL 8.4 has no CREATE INDEX IF NOT EXISTS syntax. Metadata checks make
+-- this schema safely rerunnable without duplicate-index errors.
+SET @index_sql := IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'customers' AND INDEX_NAME = 'idx_customers_city') = 0, 'CREATE INDEX idx_customers_city ON customers(city)', 'SELECT 1'); PREPARE index_stmt FROM @index_sql; EXECUTE index_stmt; DEALLOCATE PREPARE index_stmt;
+SET @index_sql := IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'products' AND INDEX_NAME = 'idx_products_category') = 0, 'CREATE INDEX idx_products_category ON products(category)', 'SELECT 1'); PREPARE index_stmt FROM @index_sql; EXECUTE index_stmt; DEALLOCATE PREPARE index_stmt;
+SET @index_sql := IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders' AND INDEX_NAME = 'idx_orders_customer_date') = 0, 'CREATE INDEX idx_orders_customer_date ON orders(customer_id, order_date)', 'SELECT 1'); PREPARE index_stmt FROM @index_sql; EXECUTE index_stmt; DEALLOCATE PREPARE index_stmt;
+SET @index_sql := IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders' AND INDEX_NAME = 'idx_orders_status_date') = 0, 'CREATE INDEX idx_orders_status_date ON orders(status, order_date)', 'SELECT 1'); PREPARE index_stmt FROM @index_sql; EXECUTE index_stmt; DEALLOCATE PREPARE index_stmt;
+SET @index_sql := IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'order_items' AND INDEX_NAME = 'idx_order_items_product') = 0, 'CREATE INDEX idx_order_items_product ON order_items(product_id)', 'SELECT 1'); PREPARE index_stmt FROM @index_sql; EXECUTE index_stmt; DEALLOCATE PREPARE index_stmt;
+SET @index_sql := IF((SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'payments' AND INDEX_NAME = 'idx_payments_order_status') = 0, 'CREATE INDEX idx_payments_order_status ON payments(order_id, status)', 'SELECT 1'); PREPARE index_stmt FROM @index_sql; EXECUTE index_stmt; DEALLOCATE PREPARE index_stmt;

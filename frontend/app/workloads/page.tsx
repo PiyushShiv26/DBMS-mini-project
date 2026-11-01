@@ -21,6 +21,7 @@ export default function WorkloadsPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("idop_role");
+    localStorage.removeItem("idop_token");
     router.push("/");
   };
 

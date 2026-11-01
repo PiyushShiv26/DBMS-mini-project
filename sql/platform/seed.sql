@@ -5,6 +5,17 @@
 
 USE idop_platform_db;
 
+-- Development/demo accounts. Passwords are PBKDF2 hashes, never plaintext.
+-- viewer@example.com  / viewerpass123
+-- analyst@example.com / analystpass123
+-- admin@example.com   / adminpass123
+INSERT INTO users (full_name, email, password_hash, role)
+VALUES
+    ('Demo Viewer', 'viewer@example.com', 'pbkdf2_sha256$120000$00112233445566778899aabbccddeeff$4ee31dd5ebe3878208c64a99b1bf840e6561b27b237db0c4ba0c6fee1dfa79a4', 'VIEWER'),
+    ('Demo Analyst', 'analyst@example.com', 'pbkdf2_sha256$120000$00112233445566778899aabbccddeeff$bcc159d1d4a3c3e7b062103fc3f61dd603b9b8dd0362847bcbaee85d44259171', 'ANALYST'),
+    ('Demo Admin', 'admin@example.com', 'pbkdf2_sha256$120000$00112233445566778899aabbccddeeff$c5ff3e452e5d09d401db4d6874faf38eece40066fed2b37a465ea6b240585805', 'ADMIN')
+ON DUPLICATE KEY UPDATE full_name = VALUES(full_name), password_hash = VALUES(password_hash), role = VALUES(role);
+
 -- 1. Register the demo database being analysed.
 INSERT INTO data_sources
     (source_id, source_name, db_type, host_name, database_name, description)

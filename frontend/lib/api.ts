@@ -1,5 +1,5 @@
 // Toggle between mock data and real backend API
-const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
+const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000/api";
 
 // --- Types ---
@@ -161,20 +161,30 @@ const MOCK_QUERY_DETAILS: Record<string, QueryDetails> = {
 // --- API Client Functions ---
 export async function getDashboardStats(): Promise<DashboardStats> {
   if (USE_MOCK) return MOCK_STATS;
-  const res = await fetch(`${API_BASE_URL}/dashboard/stats`);
+  const res = await apiFetch(`${API_BASE_URL}/dashboard/stats`);
   return res.json();
 }
 
 export async function getDatabaseSchemas(): Promise<DatabaseSchema[]> {
   if (USE_MOCK) return MOCK_SCHEMAS;
-  const res = await fetch(`${API_BASE_URL}/schemas`);
-  return res.json();
+  const res = await apiFetch(`${API_BASE_URL}/databases`);
+  const databases = await res.json();
+  return Promise.all(databases.map(async (db: { database_name: string }) => {
+    const tablesRes = await apiFetch(`${API_BASE_URL}/databases/${db.database_name}/tables`);
+    const tables = await tablesRes.json();
+    return { database_name: db.database_name, tables: await Promise.all(tables.map(async (table: { table_name: string; row_count: number }) => {
+      const schemaRes = await apiFetch(`${API_BASE_URL}/schema/${db.database_name}/${table.table_name}`);
+      const schema = await schemaRes.json();
+      return { ...table, columns: schema.columns };
+    })) };
+  }));
 }
 
 export async function getWorkloads(): Promise<SQLWorkload[]> {
   if (USE_MOCK) return MOCK_WORKLOADS;
-  const res = await fetch(`${API_BASE_URL}/workloads`);
-  return res.json();
+  const res = await apiFetch(`${API_BASE_URL}/workloads`);
+  const data = await res.json();
+  return data.map((item: any) => ({ id: String(item.workload_id), query_text: item.sql_text, source: "MySQL", execution_count: 0, avg_latency_ms: item.execution_time_ms || 0, status: "Pending" }));
 }
 
 export async function searchWorkloads(query: string): Promise<SearchResult[]> {
@@ -186,7 +196,7 @@ export async function searchWorkloads(query: string): Promise<SearchResult[]> {
       matched_tags: ["orders", "customer"],
     }));
   }
-  const res = await fetch(`${API_BASE_URL}/search`, {
+  const res = await apiFetch(`${API_BASE_URL}/search`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ query }),
@@ -204,6 +214,37 @@ export async function getQueryDetails(id: string): Promise<QueryDetails> {
       explain_plan: [],
     };
   }
-  const res = await fetch(`${API_BASE_URL}/queries/${id}`);
+  const res = await apiFetch(`${API_BASE_URL}/queries/${id}`);
+  return res.json();
+}
+
+async function apiFetch(url: string, options: RequestInit = {}) {
+  const token = typeof window !== "undefined" ? localStorage.getItem("idop_token") : null;
+  const headers = new Headers(options.headers);
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  const res = await fetch(url, { ...options, headers });
+  if (!res.ok) throw new Error((await res.text()) || `Request failed (${res.status})`);
+  return res;
+}
+
+export async function login(email: string, password: string) {
+  const res = await fetch(`${API_BASE_URL}/auth/login`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ email, password }) });
+  if (!res.ok) throw new Error("Invalid email or password");
+  return res.json();
+}
+
+export async function register(full_name: string, email: string, password: string) {
+  const res = await fetch(`${API_BASE_URL}/auth/register`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ full_name, email, password }) });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(body || `Registration failed (${res.status})`);
+  }
+  return res.json();
+}
+
+export async function provisionUser(full_name: string, email: string, password: string, role: "ANALYST" | "VIEWER") {
+  const token = localStorage.getItem("idop_token");
+  const res = await fetch("/api/admin/users", { method: "POST", headers: { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) }, body: JSON.stringify({ full_name, email, password, role }) });
+  if (!res.ok) throw new Error((await res.text()) || `Provisioning failed (${res.status})`);
   return res.json();
 }

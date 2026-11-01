@@ -7,8 +7,9 @@ import Navbar from "@/components/Navbar";
 import { getQueryDetails, QueryDetails } from "@/lib/api";
 import { Terminal, ShieldAlert, Table, ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import { Suspense } from "react";
 
-export default function QueryDetailsPage() {
+function QueryDetailsContent() {
   const router = useRouter();
   const params = useParams();
   const id = params?.id as string;
@@ -26,6 +27,7 @@ export default function QueryDetailsPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("idop_role");
+    localStorage.removeItem("idop_token");
     router.push("/");
   };
 
@@ -125,4 +127,8 @@ export default function QueryDetailsPage() {
       </main>
     </div>
   );
+}
+
+export default function QueryDetailsPage() {
+  return <Suspense fallback={<div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading query details...</div>}><QueryDetailsContent /></Suspense>;
 }

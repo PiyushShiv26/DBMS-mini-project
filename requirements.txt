@@ -2,3 +2,6 @@ mysql-connector-python
 qdrant-client
 fastembed
 pytest
+fastapi
+uvicorn[standard]
+python-dotenv

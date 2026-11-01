@@ -14,6 +14,7 @@ export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const storedRole = localStorage.getItem("idop_role") || "admin";
@@ -22,6 +23,7 @@ export default function SearchPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("idop_role");
+    localStorage.removeItem("idop_token");
     router.push("/");
   };
 
@@ -29,8 +31,9 @@ export default function SearchPage() {
     e.preventDefault();
     if (!query.trim()) return;
     setLoading(true);
-    const res = await searchWorkloads(query);
-    setResults(res);
+    setError("");
+    try { const res = await searchWorkloads(query); setResults(res); }
+    catch (err) { setResults([]); setError(err instanceof Error ? err.message : "Search failed"); }
     setLoading(false);
   };
 
@@ -105,6 +108,7 @@ export default function SearchPage() {
               </div>
             </div>
           )}
+          {error && <p className="text-sm text-red-400">{error}</p>}
         </div>
       </main>
     </div>
