@@ -1,9 +1,13 @@
 
 import os
-import mysql.connector
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def get_connection(database: str = "idop_platform_db"):
+    # Import lazily so analyzer-only tests and tooling do not require MySQL.
+    import mysql.connector
+
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
         port=int(os.getenv("DB_PORT", "3306")),

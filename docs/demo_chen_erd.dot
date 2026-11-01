@@ -1,0 +1,26 @@
+// IDOP e-commerce database - Chen notation.
+// Rectangles = entities, diamonds = relationships, ellipses = attributes.
+graph IDOP_Demo_Chen {
+  graph [label="IDOP Demo Database — Chen ER Diagram", labelloc=t, rankdir=LR, splines=ortho];
+  node [fontname="Helvetica"];
+  edge [fontname="Helvetica", fontsize=10];
+  node [shape=box, style=filled, fillcolor="#dbeafe"];
+  Customers [label="CUSTOMERS"]; Orders [label="ORDERS"]; OrderItems [label="ORDER_ITEMS"]; Products [label="PRODUCTS"]; Payments [label="PAYMENTS"];
+  node [shape=diamond, style=filled, fillcolor="#fef3c7"];
+  Places [label="PLACES"]; Contains [label="CONTAINS"]; AppearsIn [label="APPEARS_IN"]; Has [label="HAS"];
+  node [shape=ellipse, style=filled, fillcolor="#ecfdf5"];
+  CustomerId [label="PK customer_id"]; CustomerName [label="full_name"]; CustomerEmail [label="UK email"];
+  OrderId [label="PK order_id"]; OrderStatus [label="status"]; OrderTotal [label="total_amount"];
+  ItemId [label="PK order_item_id"]; Quantity [label="quantity"]; UnitPrice [label="unit_price"];
+  ProductId [label="PK product_id"]; ProductName [label="product_name"]; Category [label="category"];
+  PaymentId [label="PK payment_id"]; PaymentAmount [label="amount"]; PaymentStatus [label="status"];
+  Customers -- CustomerId; Customers -- CustomerName; Customers -- CustomerEmail;
+  Orders -- OrderId; Orders -- OrderStatus; Orders -- OrderTotal;
+  OrderItems -- ItemId; OrderItems -- Quantity; OrderItems -- UnitPrice;
+  Products -- ProductId; Products -- ProductName; Products -- Category;
+  Payments -- PaymentId; Payments -- PaymentAmount; Payments -- PaymentStatus;
+  Customers -- Places [label="1"]; Places -- Orders [label="0..*"];
+  Orders -- Contains [label="1"]; Contains -- OrderItems [label="1..*"];
+  Products -- AppearsIn [label="1"]; AppearsIn -- OrderItems [label="0..*"];
+  Orders -- Has [label="1"]; Has -- Payments [label="0..*"];
+}
