@@ -290,4 +290,4 @@ The current implementation is a prototype; its usefulness and performance benefi
 
 ## License
 
-License to be determined.
+This project is licensed under the [MIT License](LICENSE).
