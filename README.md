@@ -85,6 +85,9 @@ The editable Chen-notation source is [docs/demo_chen_erd.dot](docs/demo_chen_erd
 Rectangles represent entities, diamonds represent relationships, ellipses
 represent attributes, and edge labels show cardinalities. Render it with
 `dot -Tpng docs/demo_chen_erd.dot -o docs/demo_chen_erd.png`.
+
+The platform Chen source is [docs/platform_chen_erd.dot](docs/platform_chen_erd.dot).
+Render it with `dot -Tpng docs/platform_chen_erd.dot -o docs/platform_erd.png`.
 	
 The database diagrams and their editable Mermaid sources are available in `docs/`:
 
@@ -93,6 +96,7 @@ The database diagrams and their editable Mermaid sources are available in `docs/
 - `demo_erd.png` — e-commerce demo schema.
 - `demo_erd.md` — editable demo ER diagram source.
 - `demo_chen_erd.dot` — editable Chen-notation demo ER diagram source.
+- `platform_chen_erd.dot` — editable Chen-notation platform ER diagram source.
 
 ## Implemented Features
 

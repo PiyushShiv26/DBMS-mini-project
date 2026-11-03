@@ -1,26 +1,31 @@
-// IDOP e-commerce database - Chen notation.
-// Rectangles = entities, diamonds = relationships, ellipses = attributes.
+// IDOP idop_demo_db — Chen ER diagram.
+// Rectangle = entity; ellipse = attribute; diamond = relationship.
+// ORDER_ITEM has its own primary key, so it is a regular entity.
 graph IDOP_Demo_Chen {
-  graph [label="IDOP Demo Database — Chen ER Diagram", labelloc=t, rankdir=LR, splines=ortho];
-  node [fontname="Helvetica"];
-  edge [fontname="Helvetica", fontsize=10];
-  node [shape=box, style=filled, fillcolor="#dbeafe"];
-  Customers [label="CUSTOMERS"]; Orders [label="ORDERS"]; OrderItems [label="ORDER_ITEMS"]; Products [label="PRODUCTS"]; Payments [label="PAYMENTS"];
-  node [shape=diamond, style=filled, fillcolor="#fef3c7"];
-  Places [label="PLACES"]; Contains [label="CONTAINS"]; AppearsIn [label="APPEARS_IN"]; Has [label="HAS"];
-  node [shape=ellipse, style=filled, fillcolor="#ecfdf5"];
-  CustomerId [label="PK customer_id"]; CustomerName [label="full_name"]; CustomerEmail [label="UK email"];
-  OrderId [label="PK order_id"]; OrderStatus [label="status"]; OrderTotal [label="total_amount"];
-  ItemId [label="PK order_item_id"]; Quantity [label="quantity"]; UnitPrice [label="unit_price"];
-  ProductId [label="PK product_id"]; ProductName [label="product_name"]; Category [label="category"];
-  PaymentId [label="PK payment_id"]; PaymentAmount [label="amount"]; PaymentStatus [label="status"];
-  Customers -- CustomerId; Customers -- CustomerName; Customers -- CustomerEmail;
-  Orders -- OrderId; Orders -- OrderStatus; Orders -- OrderTotal;
-  OrderItems -- ItemId; OrderItems -- Quantity; OrderItems -- UnitPrice;
-  Products -- ProductId; Products -- ProductName; Products -- Category;
-  Payments -- PaymentId; Payments -- PaymentAmount; Payments -- PaymentStatus;
-  Customers -- Places [label="1"]; Places -- Orders [label="0..*"];
-  Orders -- Contains [label="1"]; Contains -- OrderItems [label="1..*"];
-  Products -- AppearsIn [label="1"]; AppearsIn -- OrderItems [label="0..*"];
-  Orders -- Has [label="1"]; Has -- Payments [label="0..*"];
+  graph [label="IDOP Demo Database — Chen ER Diagram", labelloc=t, rankdir=LR, splines=line, nodesep=0.45, ranksep=1.1, pad=0.25];
+  node [fontname="Helvetica", fontsize=10]; edge [fontname="Helvetica", fontsize=10];
+  node [shape=box, style="filled", fillcolor="#dbeafe"];
+  CUSTOMER [label="CUSTOMER"]; PRODUCT [label="PRODUCT"]; ORDER [label="ORDER"]; ORDER_ITEM [label="ORDER_ITEM"]; PAYMENT [label="PAYMENT"];
+  node [shape=diamond, style="filled", fillcolor="#fef3c7"];
+  PLACES [label="PLACES"]; CONTAINS [label="CONTAINS"]; INCLUDES [label="INCLUDES"]; HAS [label="HAS"];
+  node [shape=ellipse, style="filled", fillcolor="#ecfdf5"];
+  C_customer_id [label=<<U>customer_id</U>>]; C_full_name [label="full_name"]; C_email [label="email\nUNIQUE"]; C_city [label="city"]; C_registered [label="registered_at"];
+  P_product_id [label=<<U>product_id</U>>]; P_name [label="product_name"]; P_category [label="category"]; P_price [label="price"]; P_stock [label="stock_quantity"]; P_created [label="created_at"];
+  O_order_id [label=<<U>order_id</U>>]; O_customer_id [label="customer_id"]; O_date [label="order_date"]; O_status [label="status"]; O_total [label="total_amount"];
+  I_item_id [label=<<U>order_item_id</U>>]; I_order_id [label="order_id"]; I_product_id [label="product_id"]; I_quantity [label="quantity"]; I_unit_price [label="unit_price"];
+  Pay_payment_id [label=<<U>payment_id</U>>]; Pay_order_id [label="order_id"]; Pay_amount [label="amount"]; Pay_method [label="payment_method"]; Pay_status [label="status"]; Pay_ref [label="transaction_reference\nUNIQUE"]; Pay_created [label="created_at"];
+  CUSTOMER -- C_customer_id; CUSTOMER -- C_full_name; CUSTOMER -- C_email; CUSTOMER -- C_city; CUSTOMER -- C_registered;
+  PRODUCT -- P_product_id; PRODUCT -- P_name; PRODUCT -- P_category; PRODUCT -- P_price; PRODUCT -- P_stock; PRODUCT -- P_created;
+  ORDER -- O_order_id; ORDER -- O_customer_id; ORDER -- O_date; ORDER -- O_status; ORDER -- O_total;
+  ORDER_ITEM -- I_item_id; ORDER_ITEM -- I_order_id; ORDER_ITEM -- I_product_id; ORDER_ITEM -- I_quantity; ORDER_ITEM -- I_unit_price;
+  PAYMENT -- Pay_payment_id; PAYMENT -- Pay_order_id; PAYMENT -- Pay_amount; PAYMENT -- Pay_method; PAYMENT -- Pay_status; PAYMENT -- Pay_ref; PAYMENT -- Pay_created;
+  // Duplicate Graphviz edges render as clean, parallel total-participation lines.
+  CUSTOMER -- PLACES [taillabel="1", labeldistance=1.1];
+  PLACES -- ORDER [headlabel="N", labeldistance=1.1]; PLACES -- ORDER;
+  ORDER -- CONTAINS [taillabel="1", labeldistance=1.1, labelangle=25];
+  CONTAINS -- ORDER_ITEM [headlabel="N", labeldistance=1.1]; CONTAINS -- ORDER_ITEM;
+  PRODUCT -- INCLUDES [taillabel="1", labeldistance=1.1];
+  INCLUDES -- ORDER_ITEM [headlabel="N", labeldistance=1.1]; INCLUDES -- ORDER_ITEM;
+  ORDER -- HAS [taillabel="1", labeldistance=1.1, labelangle=-25];
+  HAS -- PAYMENT [headlabel="N", labeldistance=1.1]; HAS -- PAYMENT;
 }

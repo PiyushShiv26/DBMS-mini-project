@@ -1,0 +1,32 @@
+// IDOP idop_platform_db — Chen ER diagram.
+// Rectangle = entity; ellipse = attribute; diamond = relationship.
+graph IDOP_Platform_Chen {
+  graph [label="IDOP Platform Database — Chen ER Diagram", labelloc=t, rankdir=LR, splines=line, nodesep=0.45, ranksep=1.1, pad=0.25];
+  node [fontname="Helvetica", fontsize=10]; edge [fontname="Helvetica", fontsize=10];
+  node [shape=box, style="filled", fillcolor="#dbeafe"];
+  USER [label="USER"]; DATA_SOURCE [label="DATA_SOURCE"]; SCHEMA_OBJECT [label="SCHEMA_OBJECT"]; QUERY_WORKLOAD [label="QUERY_WORKLOAD"]; OPTIMIZATION_RECOMMENDATION [label="OPTIMIZATION_RECOMMENDATION"]; AUDIT_LOG [label="AUDIT_LOG"];
+  node [shape=diamond, style="filled", fillcolor="#fef3c7"];
+  CREATES [label="CREATES"]; CONTAINS [label="CONTAINS"]; RECORDS [label="RECORDS"]; RECEIVES [label="RECEIVES"]; GENERATES [label="GENERATES"];
+  node [shape=ellipse, style="filled", fillcolor="#ecfdf5"];
+  U_id [label=<<U>user_id</U>>]; U_name [label="full_name"]; U_email [label="email\nUNIQUE"]; U_hash [label="password_hash"]; U_role [label="role"]; U_created [label="created_at"];
+  D_id [label=<<U>source_id</U>>]; D_name [label="source_name"]; D_type [label="db_type"]; D_host [label="host_name"]; D_database [label="database_name"]; D_description [label="description"]; D_created_by [label="created_by"]; D_created [label="created_at"];
+  S_id [label=<<U>object_id</U>>]; S_source [label="source_id"]; S_schema [label="schema_name"]; S_name [label="object_name"]; S_type [label="object_type"]; S_description [label="description"]; S_discovered [label="discovered_at"];
+  Q_id [label=<<U>workload_id</U>>]; Q_source [label="source_id"]; Q_sql [label="sql_text"]; Q_label [label="query_label"]; Q_type [label="query_type"]; Q_exec [label="execution_time_ms"]; Q_examined [label="rows_examined"]; Q_returned [label="rows_returned"]; Q_captured [label="captured_at"];
+  R_id [label=<<U>recommendation_id</U>>]; R_workload [label="workload_id"]; R_rule [label="rule_code"]; R_recommendation [label="recommendation"]; R_rationale [label="rationale"]; R_severity [label="severity"]; R_status [label="status"]; R_created [label="created_at"];
+  A_id [label=<<U>audit_id</U>>]; A_user [label="user_id"]; A_action [label="action"]; A_entity_type [label="entity_type"]; A_entity_id [label="entity_id"]; A_details [label="details"]; A_created [label="created_at"];
+  USER -- U_id; USER -- U_name; USER -- U_email; USER -- U_hash; USER -- U_role; USER -- U_created;
+  DATA_SOURCE -- D_id; DATA_SOURCE -- D_name; DATA_SOURCE -- D_type; DATA_SOURCE -- D_host; DATA_SOURCE -- D_database; DATA_SOURCE -- D_description; DATA_SOURCE -- D_created_by; DATA_SOURCE -- D_created;
+  SCHEMA_OBJECT -- S_id; SCHEMA_OBJECT -- S_source; SCHEMA_OBJECT -- S_schema; SCHEMA_OBJECT -- S_name; SCHEMA_OBJECT -- S_type; SCHEMA_OBJECT -- S_description; SCHEMA_OBJECT -- S_discovered;
+  QUERY_WORKLOAD -- Q_id; QUERY_WORKLOAD -- Q_source; QUERY_WORKLOAD -- Q_sql; QUERY_WORKLOAD -- Q_label; QUERY_WORKLOAD -- Q_type; QUERY_WORKLOAD -- Q_exec; QUERY_WORKLOAD -- Q_examined; QUERY_WORKLOAD -- Q_returned; QUERY_WORKLOAD -- Q_captured;
+  OPTIMIZATION_RECOMMENDATION -- R_id; OPTIMIZATION_RECOMMENDATION -- R_workload; OPTIMIZATION_RECOMMENDATION -- R_rule; OPTIMIZATION_RECOMMENDATION -- R_recommendation; OPTIMIZATION_RECOMMENDATION -- R_rationale; OPTIMIZATION_RECOMMENDATION -- R_severity; OPTIMIZATION_RECOMMENDATION -- R_status; OPTIMIZATION_RECOMMENDATION -- R_created;
+  AUDIT_LOG -- A_id; AUDIT_LOG -- A_user; AUDIT_LOG -- A_action; AUDIT_LOG -- A_entity_type; AUDIT_LOG -- A_entity_id; AUDIT_LOG -- A_details; AUDIT_LOG -- A_created;
+  USER -- CREATES [taillabel="1", labeldistance=1.1, labelangle=25]; CREATES -- DATA_SOURCE [headlabel="N", labeldistance=1.1];
+  // Duplicate Graphviz edges render as clean, parallel total-participation lines.
+  DATA_SOURCE -- CONTAINS [taillabel="1", labeldistance=1.1, labelangle=25];
+  CONTAINS -- SCHEMA_OBJECT [headlabel="N", labeldistance=1.1]; CONTAINS -- SCHEMA_OBJECT;
+  DATA_SOURCE -- RECORDS [taillabel="1", labeldistance=1.1, labelangle=-25];
+  RECORDS -- QUERY_WORKLOAD [headlabel="N", labeldistance=1.1]; RECORDS -- QUERY_WORKLOAD;
+  QUERY_WORKLOAD -- RECEIVES [taillabel="1", labeldistance=1.1];
+  RECEIVES -- OPTIMIZATION_RECOMMENDATION [headlabel="N", labeldistance=1.1]; RECEIVES -- OPTIMIZATION_RECOMMENDATION;
+  USER -- GENERATES [taillabel="1", labeldistance=1.1, labelangle=-25]; GENERATES -- AUDIT_LOG [headlabel="N", labeldistance=1.1];
+}
